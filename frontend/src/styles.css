@@ -1,0 +1,29 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+  }
+  
+  textarea {
+    width: 100%;
+    resize: none;
+    font-size: 1rem;
+    padding: 0.5rem;
+    border-radius: 5px;
+  }
+  
+  .TextInput textarea,
+  .Output textarea {
+    height: 200px;
+  }
+  
+  .Header,
+  .TextInput,
+  .AnalysisOptions,
+  .Output {
+    margin-bottom: 1rem;
+  }
