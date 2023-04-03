@@ -2,7 +2,7 @@ import React from 'react';
 
 const TextInput = ({ text, setText }) => {
   return (
-    <div>
+    <div className='TextInput'>
       <textarea
         rows="20"
         cols="50"

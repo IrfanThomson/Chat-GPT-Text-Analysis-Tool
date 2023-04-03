@@ -2,7 +2,7 @@ import React from 'react';
 
 const Output = ({ output }) => {
   return (
-    <div>
+    <div className='Output'>
       <textarea
         rows="20"
         cols="50"

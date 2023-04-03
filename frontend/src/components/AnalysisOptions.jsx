@@ -2,7 +2,7 @@ import React from 'react';
 
 const AnalysisOptions = ({ option, setOption }) => {
   return (
-    <div>
+    <div className='AnalysisOptions'>
       <select value={option} onChange={(e) => setOption(e.target.value)}>
         <option value="">Select analysis type...</option>
         <option value="option1">Option 1</option>

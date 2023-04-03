@@ -15,13 +15,13 @@ body {
     padding: 0.5rem;
     border-radius: 5px;
   }
+
   
-  .TextInput textarea,
-  .Output textarea {
-    height: 200px;
+  .Header {
+    margin-bottom: 5rem;
   }
   
-  .Header,
+  .AnalyzeButton,
   .TextInput,
   .AnalysisOptions,
   .Output {
