@@ -23,14 +23,22 @@ app.get('/', (req, res) => {
 
 app.post('/api/analyze-text', async (req, res) => {
   try {
-    const { text, option } = req.body;
+    const { text, option, iterations = 0, reflectionGuidance } = req.body;
 
     if (!text || !option) {
       res.status(400).json({ success: false, message: 'Missing text or analysis option.' });
       return;
     }
 
-    const analysisResult = await analyzeTextWithChatGPT(text, option);
+    const maxIterations = 5;
+    const effectiveIterations = Math.min(iterations, maxIterations);
+
+    let analysisResult = await analyzeTextWithChatGPT(text, option);
+
+    for (let i = 0; i < effectiveIterations; i++) {
+      analysisResult = await selfReflectOnAnalysis(text, option, analysisResult.result, reflectionGuidance);
+    }
+
     res.status(200).json(analysisResult);
   } catch (error) {
     console.error('Error in /api/analyze-text:', error.message);
@@ -50,15 +58,27 @@ async function analyzeTextWithChatGPT(text, option) {
   return { success: true, result: analysisResult };
 }
 
+async function selfReflectOnAnalysis(originalText, option, initialResponse, reflectionGuidance = '') {
+  const prompt = `Refine the analysis of the original text:\n\n"${originalText}"\n\nOption: ${option}\n\nImprove the previous response:\n\n"${initialResponse}"\n\nConsider any flaws or inaccuracies without stating them explicitly and directly provide a higher-quality answer. ${reflectionGuidance}`;
+
+  const response = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [{ role: 'user', content: prompt }],
+  });
+
+  const revisedResponse = processChatGptResponse(response.data.choices[0].message.content);
+  return { success: true, result: revisedResponse };
+}
+
 function generatePrompt(text, option) {
   let prompt = '';
 
   switch (option) {
-    case 'summarize':
-      prompt = `Please summarize the following text:\n\n${text}`;
+    case 'generate article':
+      prompt = `Using the following text as a starting point, create a detailed and engaging article that weaves these ideas together, explores their connections, and dives deeper into the subject matter:\n\n${text}`;
       break;
-    case 'grammar_check':
-      prompt = `Please check the grammar of the following text and suggest corrections:\n\n${text}`;
+    case 'critical analysis':
+      prompt = `Please perform a comprehensive and critical evaluation of the following text and identify its strengths and weaknesses in detail. Provide specific improvements and actionable suggestions, supported by examples:\n\n${text}`;
       break;
     default:
       throw new Error('Invalid analysis option.');
