@@ -5,17 +5,17 @@ function App() {
   const [textInput, setTextInput] = useState('');
   const [analysisOption, setAnalysisOption] = useState('');
   const [iterations, setIterations] = useState(1);
-  const [reflectionGuidance, setReflectionGuidance] = useState('');
+  const [guidance, setGuidance] = useState('');
   const [outputText, setOutputText] = useState('');
 
-  async function analyzeText(text, option, iterations, reflectionGuidance) {
+  async function analyzeText(text, option, iterations, guidance) {
     try {
       const response = await fetch('http://localhost:3001/api/analyze-text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text, option, iterations, reflectionGuidance }),
+        body: JSON.stringify({ text, option, iterations, guidance }),
       });
 
       if (!response.ok) {
@@ -41,8 +41,8 @@ function App() {
     setIterations(event.target.value);
   }
 
-  function handleReflectionGuidanceChange(event) {
-    setReflectionGuidance(event.target.value);
+  function handleGuidanceChange(event) {
+    setGuidance(event.target.value);
   }
 
   async function handleAnalyzeButtonClick() {
@@ -52,7 +52,7 @@ function App() {
     }
 
     try {
-      const result = await analyzeText(textInput, analysisOption, iterations, reflectionGuidance);
+      const result = await analyzeText(textInput, analysisOption, iterations, guidance);
       setOutputText(result.result);
     } catch (error) {
       console.error('Error in handleAnalyzeButtonClick:', error.message);
@@ -77,6 +77,7 @@ function App() {
           <select value={analysisOption} onChange={handleAnalysisOptionChange}>
             <option value="">--Select an option--</option>
             <option value="generate article">Generate Article</option>
+            <option value="generate story">Generation Story</option>
             <option value="critical analysis">Critical Analysis</option>
           </select>
         </label>
@@ -91,11 +92,11 @@ function App() {
           />
         </label>
         <label>
-          Reflection guidance:
+          Manual guidance:
           <input
             type="text"
-            value={reflectionGuidance}
-            onChange={handleReflectionGuidanceChange}
+            value={guidance}
+            onChange={handleGuidanceChange}
             placeholder="e.g., Focus on clarity"
           />
         </label>

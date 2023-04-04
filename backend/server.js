@@ -23,7 +23,7 @@ app.get('/', (req, res) => {
 
 app.post('/api/analyze-text', async (req, res) => {
   try {
-    const { text, option, iterations = 0, reflectionGuidance } = req.body;
+    const { text, option, iterations = 0, guidance } = req.body;
 
     if (!text || !option) {
       res.status(400).json({ success: false, message: 'Missing text or analysis option.' });
@@ -33,11 +33,9 @@ app.post('/api/analyze-text', async (req, res) => {
     const maxIterations = 5;
     const effectiveIterations = Math.min(iterations, maxIterations);
 
-    let analysisResult = await analyzeTextWithChatGPT(text, option);
+    let analysisResult = await analyzeTextWithChatGPT(text, option, guidance);
 
-    for (let i = 0; i < effectiveIterations; i++) {
-      analysisResult = await selfReflectOnAnalysis(text, option, analysisResult.result, reflectionGuidance);
-    }
+    analysisResult = await selfReflectOnAnalysis(analysisResult.result, effectiveIterations, guidance);
 
     res.status(200).json(analysisResult);
   } catch (error) {
@@ -46,8 +44,8 @@ app.post('/api/analyze-text', async (req, res) => {
   }
 });
 
-async function analyzeTextWithChatGPT(text, option) {
-  const prompt = generatePrompt(text, option);
+async function analyzeTextWithChatGPT(text, option, guidance) {
+  const prompt = generatePrompt(text, option, guidance);
 
   const response = await openai.createChatCompletion({
     model: 'gpt-3.5-turbo',
@@ -58,27 +56,43 @@ async function analyzeTextWithChatGPT(text, option) {
   return { success: true, result: analysisResult };
 }
 
-async function selfReflectOnAnalysis(originalText, option, initialResponse, reflectionGuidance = '') {
-  const prompt = `Refine the analysis of the original text:\n\n"${originalText}"\n\nOption: ${option}\n\nImprove the previous response:\n\n"${initialResponse}"\n\nConsider any flaws or inaccuracies without stating them explicitly and directly provide a higher-quality answer. ${reflectionGuidance}`;
+async function selfReflectOnAnalysis(initialResponse, numIterations, guidance) {
+  let currentResponse = initialResponse;
 
-  const response = await openai.createChatCompletion({
-    model: 'gpt-3.5-turbo',
-    messages: [{ role: 'user', content: prompt }],
-  });
+  for (let i = 0; i < numIterations; i++) {
+    const analysisPrompt = generatePrompt(currentResponse, 'critical analysis');
+    
+    const analysisResponse = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: analysisPrompt }],
+    });
+    const analyzedResponse = processChatGptResponse(analysisResponse.data.choices[0].message.content);
 
-  const revisedResponse = processChatGptResponse(response.data.choices[0].message.content);
-  return { success: true, result: revisedResponse };
+    const improvementPrompt = `Based on the critical analysis provided, please improve the original text. ${guidance}\n\nOriginal Text: ${currentResponse}\n\nCritical Analysis: ${analyzedResponse}`;
+    
+    const improvedResponse = await openai.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages: [{ role: 'user', content: improvementPrompt }],
+    });
+
+    currentResponse = processChatGptResponse(improvedResponse.data.choices[0].message.content);
+  }
+
+  return { success: true, result: currentResponse };
 }
 
-function generatePrompt(text, option) {
+function generatePrompt(text, option, guidance) {
   let prompt = '';
 
   switch (option) {
     case 'generate article':
-      prompt = `Using the following text as a starting point, create a detailed and engaging article that weaves these ideas together, explores their connections, and dives deeper into the subject matter:\n\n${text}`;
+      prompt = `Using the following text as a starting point, create a detailed and engaging article that weaves these ideas together, explores their connections, and dives deeper into the subject matter. ${guidance}\n\n${text}`;
+      break;
+    case 'generate story':
+      prompt = 'Given the text below, construct a comprehensive outline for an enthralling story. Ensure that the outline covers key plot points, character development, subplots, and relevant themes. Use the provided ideas as a foundation to build a rich and engaging narrative. ${guidance}\n\n${text}';
       break;
     case 'critical analysis':
-      prompt = `Please perform a comprehensive and critical evaluation of the following text and identify its strengths and weaknesses in detail. Provide specific improvements and actionable suggestions, supported by examples:\n\n${text}`;
+      prompt = `Please perform a comprehensive and critical evaluation of the following text and identify its strengths and weaknesses in detail. Provide specific improvements and actionable suggestions, supported by examples. ${guidance}\n\n${text}`;
       break;
     default:
       throw new Error('Invalid analysis option.');
