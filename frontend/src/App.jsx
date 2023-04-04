@@ -58,7 +58,41 @@ function App() {
       console.error('Error in handleAnalyzeButtonClick:', error.message);
     }
   }
+  async function printPrompts(text, option, iterations, guidance) {
+    try {
+      const response = await fetch('http://localhost:3001/api/generate-prompt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text, option, iterations, guidance }),
+      });
 
+      if (!response.ok) {
+        throw new Error('An error occurred while processing the request.');
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error in printPrompts:', error.message);
+      throw new Error('An error occurred while processing the request.');
+    }
+  }
+
+  async function handlePrintPromptsButtonClick() {
+    if (!textInput || !analysisOption) {
+      alert('Please enter text and select an analysis option.');
+      return;
+    }
+
+    try {
+      const result = await printPrompts(textInput, analysisOption, iterations, guidance);
+      setOutputText(result.result);
+    } catch (error) {
+      console.error('Error in handlePrintPromptsButtonClick:', error.message);
+    }
+  }
   return (
     <div className="App">
       <h1>Text Analysis with ChatGPT</h1>
@@ -101,8 +135,9 @@ function App() {
           />
         </label>
       </div>
-      <div className="AnalyzeButton">
+      <div className="Buttons">
         <button onClick={handleAnalyzeButtonClick}>Analyze</button>
+        <button onClick={handlePrintPromptsButtonClick}>Print Prompts</button>
       </div>
       <div className="Output">
         <textarea

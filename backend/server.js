@@ -44,6 +44,34 @@ app.post('/api/analyze-text', async (req, res) => {
   }
 });
 
+app.post('/api/generate-prompt', async (req, res) => {
+  try {
+    const { text, option, iterations, guidance } = req.body;
+
+    if (!text || !option) {
+      res.status(400).json({ success: false, message: 'Missing text or analysis option.' });
+      return;
+    }
+
+    const generatedPrompt = generatePrompt(text, option, guidance);
+    let prompts = [generatedPrompt];
+
+    if (iterations && iterations > 0) {
+      for (let i = 0; i < iterations; i++) {
+        const reflectionPrompt = 'Please perform a comprehensive and critical evaluation of the following text and identify its strengths and weaknesses in detail. Provide specific improvements and actionable suggestions, supported by examples. ${guidance}';
+        prompts.push(reflectionPrompt);
+        const improvementPrompt = 'Based on that critical analysis, please improve the original text. ${guidance}';
+        prompts.push(improvementPrompt);
+      }
+    }
+
+    res.status(200).json({ success: true, result: prompts.join('\n\n---\n\n') });
+  } catch (error) {
+    console.error('Error in /api/generate-prompt:', error.message);
+    res.status(500).json({ success: false, message: 'An error occurred while processing the request.' });
+  }
+});
+
 async function analyzeTextWithChatGPT(text, option, guidance) {
   const prompt = generatePrompt(text, option, guidance);
 
