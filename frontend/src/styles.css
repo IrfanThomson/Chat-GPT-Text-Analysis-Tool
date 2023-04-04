@@ -16,6 +16,14 @@ body {
     border-radius: 5px;
   }
 
+  .ProcessOptions {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .ProcessOptions label {
+    margin-bottom: 0.5rem;
+  }
   
   .Header {
     margin-bottom: 5rem;
