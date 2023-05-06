@@ -29,6 +29,7 @@ body {
     margin-bottom: 5rem;
   }
   
+  .APIInput,
   .Buttons,
   .TextInput,
   .AnalysisOptions,

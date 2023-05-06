@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './styles.css';
 
 function App() {
+  const [APIKeyInput, setAPIKeyInput] = useState('');
   const [textInput, setTextInput] = useState('');
   const [processOption, setProcessOption] = useState('');
   const [iterations, setIterations] = useState(1);
@@ -30,11 +31,12 @@ function App() {
       throw new Error('An error occurred while processing the request.');
     }
   }
-
+  function handleAPIKeyInputChange(event) {
+    setAPIKeyInput(event.target.value);
+  }
   function handleTextInputChange(event) {
     setTextInput(event.target.value);
   }
-
   function handleProcessOptionChange(event) {
     setProcessOption(event.target.value);
   }
@@ -47,6 +49,43 @@ function App() {
   }
   function handleSelfReflectionOptionChange(event) {
     setSelfReflectionOption(event.target.value);
+  }
+
+  async function handleAPIButtonClck(){
+    if (!APIKeyInput) {
+      alert('Please enter an OpenAI API key.');
+      return;
+    }
+    try {
+      const result = await setAPIKey(APIKeyInput);
+      if(result){
+        alert('OpenAI API Key verified');
+      }
+    } catch (error) {
+      console.error('Error in handlePrintPromptsButtonClick:', error.message);
+    }
+  }
+
+  async function setAPIKey(){
+    try {
+      const response = await fetch('http://localhost:3001/api/set-api-key', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({APIKeyInput}),
+      });
+
+      if (!response.ok) {
+        throw new Error('An error occurred while processing the request.');
+      }
+
+      const result = await response.json();
+      return result;
+    } catch (error) {
+      console.error('Error in set-api-key:', error.message);
+      throw new Error('An error occurred while processing the request.');
+    }
   }
 
   async function handleProcessButtonClick() {
@@ -100,6 +139,18 @@ function App() {
   return (
     <div className="App">
       <h1>Text Processing with ChatGPT</h1>
+      <div className='APIKeyInput'>
+      <label>
+          Enter OpenAI API key:
+          <input
+            type="text"
+            value={guidance}
+            onChange={handleGuidanceChange}
+            placeholder="e.g., Focus on clarity"
+          />
+        </label>
+        <button onClick={handleProcessButtonClick}>Enter</button>
+      </div>
       <div className="TextInput">
         <textarea
           rows="20"
