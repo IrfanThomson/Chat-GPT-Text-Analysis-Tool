@@ -11,7 +11,7 @@ function App() {
 
   async function processText(text, option, iterations, guidance, selfReflectionOption) {
     try {
-      const response = await fetch('http://localhost:3002/api/process-text', {
+      const response = await fetch('http://writingdatabase.me/textapi/process-text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
