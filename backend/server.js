@@ -21,6 +21,14 @@ app.get('/', (req, res) => {
   res.send('Text process API');
 });
 
+app.get('/api/test', (req,res) => {
+  res.send('Test 1')
+});
+
+app.get('/test', (req,res) => {
+  res.send('Test 2')
+});
+
 app.post('/api/process-text', async (req, res) => {
   try {
     const { text, option, iterations = 0, guidance, selfReflectionOption} = req.body;
