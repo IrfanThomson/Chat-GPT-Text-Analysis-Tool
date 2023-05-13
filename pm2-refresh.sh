@@ -1,7 +1,7 @@
 #script to manually restart processes
-#kill existing processes
-sudo pm2 kill textprocess
-sudo pm2 kill textprocess-api
+#delete existing processes
+sudo pm2 delete textprocess
+sudo pm2 delete textprocess-api
 #frontend
 cd ./frontend
 sudo pm2 start npm --name textprocess -- run host
