@@ -22,11 +22,11 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/test', (req,res) => {
-  res.send('Test 1')
+  res.send('Test success')
 });
 
-app.get('/test', (req,res) => {
-  res.send('Test 2')
+app.post('/api/post-test', (req,res) => {
+  res.send('Post test success')
 });
 
 app.post('/api/process-text', async (req, res) => {
