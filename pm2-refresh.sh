@@ -1,12 +1,12 @@
 #script to manually restart processes
 #kill existing processes
-sudo pm2 kill processtext
-sudo pm2 kill processtext-api
+sudo pm2 kill textprocess
+sudo pm2 kill textprocess-api
 #frontend
 cd ./frontend
-sudo pm2 start npm --name processtext -- run host
+sudo pm2 start npm --name textprocess -- run host
 cd ..
 #backend
 cd ./backend
-sudo pm2 start npm --name processtext-api -- start
+sudo pm2 start npm --name textprocess-api -- start
 cd ..
