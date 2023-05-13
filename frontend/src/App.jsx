@@ -11,7 +11,7 @@ function App() {
 
   async function processText(text, option, iterations, guidance, selfReflectionOption) {
     try {
-      const response = await fetch('http://processtext.irfanthomson/api/process-text', {
+      const response = await fetch('https://processtext.irfanthomson/api/process-text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -64,7 +64,7 @@ function App() {
   }
   async function printPrompts(text, option, iterations, guidance, selfReflectionOption) {
     try {
-      const response = await fetch('http://textprocess.irfanthomson.com/api/generate-prompt', {
+      const response = await fetch('https://textprocess.irfanthomson.com/api/generate-prompt', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
