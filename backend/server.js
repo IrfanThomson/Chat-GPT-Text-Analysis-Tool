@@ -22,10 +22,10 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/test', (req,res) => {
-  res.send('Test success')
+  res.send('Get test success')
 });
 
-app.post('/api/post-test', (req,res) => {
+app.post('/api/test', (req,res) => {
   res.send('Post test success')
 });
 
