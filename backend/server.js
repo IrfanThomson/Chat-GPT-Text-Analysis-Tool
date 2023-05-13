@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
   res.send('Text process API');
 });
 
-app.post('/process-text', async (req, res) => {
+app.post('/api/process-text', async (req, res) => {
   try {
     const { text, option, iterations = 0, guidance, selfReflectionOption} = req.body;
 
@@ -39,12 +39,12 @@ app.post('/process-text', async (req, res) => {
 
     res.status(200).json(processResult);
   } catch (error) {
-    console.error('Error in /process-text:', error.message);
+    console.error('Error in /api/process-text:', error.message);
     res.status(500).json({ success: false, message: 'An error occurred while processing the request.' });
   }
 });
 
-app.post('/generate-prompt', async (req, res) => {
+app.post('/api/generate-prompt', async (req, res) => {
   try {
     const { text, option, iterations, guidance, selfReflectionOption } = req.body;
 
@@ -83,7 +83,7 @@ app.post('/generate-prompt', async (req, res) => {
     }
     res.status(200).json({ success: true, result: prompts.join('\n\n---\n\n') });
   } catch (error) {
-    console.error('Error in /generate-prompt:', error.message);
+    console.error('Error in /api/generate-prompt:', error.message);
     res.status(500).json({ success: false, message: 'An error occurred while processing the request.' });
   }
 });
