@@ -11,7 +11,7 @@ function App() {
 
   async function processText(text, option, iterations, guidance, selfReflectionOption) {
     try {
-      const response = await fetch('https://textprocess.irfanthomson/api/process-text', {
+      const response = await fetch('https://textprocess.irfanthomson.com/api/process-text', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
