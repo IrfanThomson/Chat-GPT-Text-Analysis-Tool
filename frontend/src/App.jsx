@@ -4,7 +4,6 @@ import Header from './components/Header';
 import TextInput from './components/TextInput';
 import Output from './components/Output';
 import AnalysisOptions from './components/AnalysisOptions';
-import ButtonLoader from './components/ButtonLoader';
 
 function App() {
   const [textInput, setTextInput] = useState('');
@@ -43,7 +42,9 @@ function App() {
       return;
     }
     try {
+      setLoading(true)
       const result = await processText(textInput, processOption, iterations, guidance, selfReflectionOption);
+      setLoading(false)
       setOutputText(result.result);
     } catch (error) {
       console.error('Error in handleProcessButtonClick:', error.message);
@@ -97,7 +98,6 @@ function App() {
       guidance={guidance} setGuidance={setGuidance}
       ></AnalysisOptions>
       <div className="Buttons">
-        <ButtonLoader process={handleProcessButtonClick}></ButtonLoader>
         <button onClick={handleProcessButtonClick} disabled={loading}>
         {loading && (
             <i
