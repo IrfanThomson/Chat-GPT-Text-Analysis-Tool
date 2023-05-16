@@ -9,7 +9,8 @@ const Header = () => {
         <br></br> to have the AI process the text and automatically improve its response before returning it. The
         <br></br> "manual guidance" is added to the end of any chosen processing method, and it can also be used
         <br></br>  with the "blank" process option for an entirely user-generated prompt. Hit "Process" to generate 
-        <br></br> a response or "Print Prompts" to see what the website would have been entered into Chat GPT.</p>
+        <br></br> a response or "Print Prompts" to see what the website would have entered into Chat GPT if you had
+        <br></br> hit process.</p>
     </div>
   );
 };
