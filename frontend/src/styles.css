@@ -16,12 +16,12 @@ body {
     border-radius: 5px;
   }
 
-  .ProcessOptions {
+  .AnalysisOptions {
     display: flex;
     flex-direction: column;
   }
   
-  .ProcessOptions label {
+  .AnalysisOptions label {
     margin-bottom: 0.5rem;
   }
   
@@ -29,6 +29,10 @@ body {
     margin-bottom: 5rem;
   }
   
+  .wc{
+    text-align: right;
+  }
+
   .Buttons,
   .TextInput,
   .AnalysisOptions,

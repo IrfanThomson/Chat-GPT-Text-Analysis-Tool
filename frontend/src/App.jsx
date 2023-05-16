@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import './styles.css';
+import Header from './components/Header';
+import TextInput from './components/TextInput';
+import Output from './components/Output';
+import AnalysisOptions from './components/AnalysisOptions';
+import ButtonLoader from './components/ButtonLoader';
 
 function App() {
   const [textInput, setTextInput] = useState('');
   const [processOption, setProcessOption] = useState('');
-  const [iterations, setIterations] = useState(1);
+  const [iterations, setIterations] = useState(0);
   const [guidance, setGuidance] = useState('');
   const [selfReflectionOption, setSelfReflectionOption] = useState('default');
   const [outputText, setOutputText] = useState('');
+  const [loading, setLoading] = useState(false)
 
   async function processText(text, option, iterations, guidance, selfReflectionOption) {
     try {
@@ -31,30 +37,11 @@ function App() {
     }
   }
 
-  function handleTextInputChange(event) {
-    setTextInput(event.target.value);
-  }
-
-  function handleProcessOptionChange(event) {
-    setProcessOption(event.target.value);
-  }
-  function handleIterationsChange(event) {
-    setIterations(event.target.value);
-  }
-
-  function handleGuidanceChange(event) {
-    setGuidance(event.target.value);
-  }
-  function handleSelfReflectionOptionChange(event) {
-    setSelfReflectionOption(event.target.value);
-  }
-
   async function handleProcessButtonClick() {
     if (!textInput || !processOption) {
       alert('Please enter text and select a process option.');
       return;
     }
-  
     try {
       const result = await processText(textInput, processOption, iterations, guidance, selfReflectionOption);
       setOutputText(result.result);
@@ -85,6 +72,7 @@ function App() {
   }
 
   async function handlePrintPromptsButtonClick() {
+    setLoading(true)
     if (!textInput || !processOption) {
       alert('Please enter text and select an process option.');
       return;
@@ -95,72 +83,34 @@ function App() {
       setOutputText(result.result);
     } catch (error) {
       console.error('Error in handlePrintPromptsButtonClick:', error.message);
+      alert("There was an error in handling the request");
     }
+    setLoading(false)
   }
   return (
     <div className="App">
-      <h1>Text Processing with ChatGPT</h1>
-      <div className="TextInput">
-        <textarea
-          rows="20"
-          cols="50"
-          value={textInput}
-          onChange={handleTextInputChange}
-          placeholder="Enter your text here"
-        />
-      </div>
-      <div className="ProcessOptions">
-        <label>
-          Choose process:
-          <select value={processOption} onChange={handleProcessOptionChange}>
-            <option value="">--Select an option--</option>
-            <option value="generate article">Generate Article</option>
-            <option value="generate story">Generation Story</option>
-            <option value="critical analysis">Critical Analysis</option>
-            <option value="idea analysis">Idea Analysis</option>
-          </select>
-        </label>
-        <label>
-          Self-reflection option:
-          <select value={selfReflectionOption} onChange={handleSelfReflectionOptionChange}>
-            <option value="default">Default</option>
-            <option value="critical analysis">Critical Analysis</option>
-            <option value="idea analysis">Idea Analysis</option>
-          </select>
-        </label>
-        <label>
-          Number of iterations:
-          <input
-            type="number"
-            min="0"
-            max="5"
-            value={iterations}
-            onChange={handleIterationsChange}
-          />
-        </label>
-        <label>
-          Manual guidance:
-          <input
-            type="text"
-            value={guidance}
-            onChange={handleGuidanceChange}
-            placeholder="e.g., Focus on clarity"
-          />
-        </label>
-      </div>
+      <Header></Header>
+      <TextInput text={textInput} setText={setTextInput}></TextInput>
+      <AnalysisOptions option={processOption} setOption={setProcessOption}
+      selfReflection={selfReflectionOption} setSelfReflection={setSelfReflectionOption}
+      iterations={iterations} setIterations={setIterations}
+      guidance={guidance} setGuidance={setGuidance}
+      ></AnalysisOptions>
       <div className="Buttons">
-        <button onClick={handleProcessButtonClick}>Process</button>
+        <ButtonLoader process={handleProcessButtonClick}></ButtonLoader>
+        <button onClick={handleProcessButtonClick} disabled={loading}>
+        {loading && (
+            <i
+              className="fa fa-refresh fa-spin"
+              style={{ marginRight: "5px" }}
+            />
+          )}
+          {loading && <span>Loading</span>}
+          {!loading && <span>Process</span>}
+          </button>
         <button onClick={handlePrintPromptsButtonClick}>Print Prompts</button>
       </div>
-      <div className="Output">
-        <textarea
-          rows="20"
-          cols="50"
-          value={outputText}
-          readOnly
-          placeholder="Output will appear here"
-        />
-      </div>
+      <Output output={outputText}></Output>
     </div>
   );
 }

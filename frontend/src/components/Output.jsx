@@ -8,7 +8,7 @@ const Output = ({ output }) => {
         cols="50"
         value={output}
         readOnly
-        placeholder="Analysis output will appear here..."
+        placeholder="Output will appear here..."
       />
     </div>
   );

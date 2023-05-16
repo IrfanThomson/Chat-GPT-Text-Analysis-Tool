@@ -32,7 +32,6 @@ app.post('/api/test', (req,res) => {
 app.post('/api/process-text', async (req, res) => {
   try {
     const { text, option, iterations = 0, guidance, selfReflectionOption} = req.body;
-
     if (!text || !option) {
       res.status(400).json({ success: false, message: 'Missing text or process option.' });
       return;
@@ -148,6 +147,9 @@ function generatePrompt(text, option, guidance) {
   let prompt = '';
 
   switch (option) {
+    case 'blank':
+      prompt = `${guidance}\n\n${text}`;
+      break;
     case 'generate article':
       prompt = `Using the following text as a starting point, create a detailed and engaging article that weaves these ideas together, explores their connections, and dives deeper into the subject matter. ${guidance}\n\n${text}`;
       break;
